@@ -1,0 +1,1 @@
+(. (EmptyBST) (insert 1))

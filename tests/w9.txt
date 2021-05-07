@@ -1,0 +1,3 @@
+(. (. (EmptyBST) (insert 1))
+   (search 0)
+)

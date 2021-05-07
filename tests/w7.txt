@@ -1,0 +1,3 @@
+(. (. (List) (buildList 10))
+   (isEmpty)
+)

@@ -1,0 +1,6 @@
+Symbol table uses ClassDefEntry class
+className and superClassName are stored as Strings
+
+class fields are stored as a LinkedList
+
+class functions and their parameters are stored as a HashMap, with function names as keys and their parameters stored in a LinkedList tied to the map

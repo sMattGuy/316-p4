@@ -1,0 +1,216 @@
+class A
+{
+	x1
+
+	((f1) 
+		(+ (. this x1) 7.7)
+	)
+}
+
+class B : A
+{
+	x2
+
+	((f2) 
+		(- (. this x2)
+		   (. this (x1))
+		)
+	)
+}
+
+class C : A
+{
+	x3
+
+	((f2)
+		(! (. this x3))
+	)
+
+	((f3)
+		(| (. this (f2))
+		   (. this x3)
+		)
+	)
+}
+
+class D : A
+{
+	x4
+
+	((f1)
+		(* (. this x4) 7.7)
+	)
+
+	((f4)
+		(- (. this (x1)) 10)
+	)
+}
+
+class E : B
+{
+	x5
+
+	((f1)
+		(/ (. this (f2)) 0.35)
+	)
+
+	((f5)
+		(C 10 (= 0 0))
+	)
+
+	((f6)
+		(D 20 30)
+	)
+}
+
+class F : C
+{
+	x6
+
+	((f3)
+		(& (. this (f2)) (. this (x3)))
+	)
+
+	((f7)
+		(if (. this (x3)) (. this (f1))
+				  (. this (f3))
+		)
+	)
+
+	((f8)
+		(if (. this x6) (. this (f2))
+				(. this (x1))
+		)
+	)
+}
+
+class G : D
+{
+	x7
+	x8
+
+	((f9)
+		(+ (. this x7) (. this x8))
+	)
+}
+
+class Pair
+{
+	first
+	second
+}
+
+class List
+{
+	((isEmpty) null)
+	((buildList i)
+		(if (= i 0) (EmptyList)
+	                    (NonEmptyList i (. this (buildList (- i 1))))
+               	)
+	)
+}
+
+class EmptyList : List
+{
+	((isEmpty) (= 0 0))
+	((length) 0)
+}
+
+class NonEmptyList : List
+{
+	data
+	tailList
+
+	((isEmpty) (= 0 1))
+	((length)
+	    	(+ 1 (. (. this tailList) (length)))
+	)
+}
+
+class BST
+{
+	((height) null)
+	((search data) null)
+	((insert x) null)
+
+	((exampleBST)
+		(. (. (. (. (. (. (. (EmptyBST) (insert 4)) (insert 2)) (insert 6)) (insert 1)) (insert 3)) (insert 5)) (insert 7))
+	)
+}
+
+class EmptyBST : BST
+{
+	((height) 0)
+
+	((insert x)
+		(NonEmptyBST x this this)
+	)
+}
+
+class NonEmptyBST : BST
+{
+	data
+	leftSubTree
+	rightSubTree
+
+	((height)
+		(+ 1 (. (C1) (max (. (. this leftSubTree)  (height))
+		                  (. (. this rightSubTree) (height))
+			    )
+		     )
+		)
+	)
+
+	((search x)
+		(if (= x (. this data)) this
+		(if (< x (. this data)) (. (. this leftSubTree)  (search x))
+			                (. (. this rightSubTree) (search x))
+		))
+	)
+
+	((insert x)
+		(if (= x (. this data)) this
+		(if (< x (. this data)) (NonEmptyBST (. this data) (. (. this leftSubTree) (insert x)) (. this rightSubTree))
+			                (NonEmptyBST (. this data) (. this leftSubTree) (. (. this rightSubTree) (insert x)))
+		))
+	)
+}
+
+class C1
+{
+	((examplePair)
+		(Pair (Pair 1 2) (Pair 3 4))
+	)
+
+	((max x y)
+		(if (>= x y) x y)
+	)
+}
+
+class C2
+{
+	((square x) (* x x))
+
+	((pi) 3.14159)
+
+	((cylinderVolume length radius)
+  		(* length (* (. this (pi)) (. this (square radius)))))
+
+	((fact n)
+  		(if (= n 0) 1
+              		    (* n (. this (fact (- n 1))))
+        	)
+	)
+
+	((fib n)
+  		(if (<= n 1) n
+               		    (+ (. this (fib (- n 1))) (. this (fib (- n 2))))
+  		)
+	)
+
+	((test x y)
+  		(if (> x -0987) +6453
+                  		(/ -1540 y)
+  		)
+	)
+}
