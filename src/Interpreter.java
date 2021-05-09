@@ -21,6 +21,10 @@ public class Interpreter{
 		//get parse tree
 		multipleClassDef completeParse = Parser.getParse(brClass, o);
 		//start paring the expression file
+		eval(brExp,o2,console,completeParse,null);
+	}
+	
+	static String eval(BufferedReader brExp,PrintStream o2,PrintStream console,multipleClassDef completeParse, String workingClassName) throws IOException{
 		String token = LexAnalyzer.getToken(brExp);
 		String[] token_split = token.split(" ");
 		if(token_split[0].equals("(")){
@@ -32,57 +36,64 @@ public class Interpreter{
 			//arith
 			if(token_split[0].equals("+") || token_split[0].equals("*") || token_split[0].equals("-") || token_split[0].equals("/")){
 				System.setOut(o2);
-				double result = arithExp(brExp,o2,token_split[0],completeParse);
+				double result = arithExp(brExp,o2,token_split[0],completeParse,workingClassName);
 				if(isDouble){
 					System.out.println(result);
 					System.setOut(console);
 					System.out.println(result);
+					return Double.toString(result);
 				}
 				else{
 					System.out.println((int)result);
 					System.setOut(console);
 					System.out.println((int)result);
+					return Integer.toString((int)result);
 				}
 			}
 			//boolean
 			else if(token_split[0].equals("|") || token_split[0].equals("&") || token_split[0].equals("!")){
-				boolean results = boolExp(brExp,o2,token_split[0],completeParse);
+				boolean results = boolExp(brExp,o2,token_split[0],completeParse,workingClassName);
 				System.setOut(o2);
 				System.out.println(results);
 				System.setOut(console);
 				System.out.println(results);
+				return Boolean.toString(results);
 			}
 			//comparison
 			else if(token_split[0].equals("<") || token_split[0].equals(">") || token_split[0].equals("<=") || token_split[0].equals(">=") || token_split[0].equals("=")){
-				boolean results = compExp(brExp,o2,token_split[0],completeParse);
+				boolean results = compExp(brExp,o2,token_split[0],completeParse,workingClassName);
 				System.setOut(o2);
 				System.out.println(results);
 				System.setOut(console);
 				System.out.println(results);
+				return Boolean.toString(results);
 			}
 			//condition
 			else if(token_split[0].equals("if")){
-				double results = condExp(brExp,o2,token_split[0],completeParse);
+				double results = condExp(brExp,o2,token_split[0],completeParse,workingClassName);
 				System.setOut(o2);
 				System.out.println(results);
 				System.setOut(console);
 				System.out.println(results);
+				return Double.toString(results);
 			}
 			//constructor
 			else if(token_split[1].equals("id")){
-				String results = constExp(brExp,o2,token_split[0],completeParse);
+				String results = constExp(brExp,o2,token_split[0],completeParse,workingClassName);
 				System.setOut(o2);
 				System.out.println(results);
 				System.setOut(console);
 				System.out.println(results);
+				return results;
 			}
 			//field getter
 			else if(token_split[0].equals(".")){
-				String results = fieldExp(brExp,o2,token_split[0],completeParse);
+				String results = fieldExp(brExp,o2,token_split[0],completeParse,workingClassName);
 				System.setOut(o2);
 				System.out.println(results);
 				System.setOut(console);
 				System.out.println(results);
+				return results;
 			}
 			//error
 			else{
@@ -101,8 +112,10 @@ public class Interpreter{
 			System.out.println(token_split[0] + " Error, invalid start of expression");
 			System.exit(0);
 		}
+		return "error didn't return a valid result";
 	}
-	static double arithExp(BufferedReader br, PrintStream fileOut, String readToken, multipleClassDef findClass) throws IOException{
+	
+	static double arithExp(BufferedReader br, PrintStream fileOut, String readToken, multipleClassDef findClass, String workingClassName) throws IOException{
 		//get arthimatic type
 		double unit1 = -1;
 		double unit2 = -1;
@@ -113,13 +126,13 @@ public class Interpreter{
 			token = LexAnalyzer.getToken(br);
 			token_split = token.split(" ");
 			if(token_split[0].equals("+") || token_split[0].equals("*") || token_split[0].equals("-") || token_split[0].equals("/")){
-				unit1 = arithExp(br,fileOut,token_split[0],findClass);
+				unit1 = arithExp(br,fileOut,token_split[0],findClass,workingClassName);
 				if(unit1 % 1 != 0){
 					isDouble = true;
 				}
 			}
 			else if(token_split[0].equals("if")){
-				unit1 = condExp(br,fileOut,token_split[0],findClass);
+				unit1 = condExp(br,fileOut,token_split[0],findClass,workingClassName);
 				if(unit1 % 1 != 0){
 					isDouble = true;
 				}
@@ -157,13 +170,13 @@ public class Interpreter{
 			token = LexAnalyzer.getToken(br);
 			token_split = token.split(" ");
 			if(token_split[0].equals("+") || token_split[0].equals("*") || token_split[0].equals("-") || token_split[0].equals("/")){
-				unit2 = arithExp(br,fileOut,token_split[0],findClass);
+				unit2 = arithExp(br,fileOut,token_split[0],findClass,workingClassName);
 				if(unit2 % 1 != 0){
 					isDouble = true;
 				}
 			}
 			else if(token_split[0].equals("if")){
-				unit2 = condExp(br,fileOut,token_split[0],findClass);
+				unit2 = condExp(br,fileOut,token_split[0],findClass,workingClassName);
 				if(unit2 % 1 != 0){
 					isDouble = true;
 				}
@@ -235,7 +248,7 @@ public class Interpreter{
 		return -999999;
 	}
 	
-	static boolean boolExp(BufferedReader br, PrintStream fileOut, String readToken, multipleClassDef findClass) throws IOException{
+	static boolean boolExp(BufferedReader br, PrintStream fileOut, String readToken, multipleClassDef findClass, String workingClassName) throws IOException{
 		//get arthimatic type
 		boolean unit1 = false;
 		boolean unit2 = false;
@@ -246,10 +259,10 @@ public class Interpreter{
 			token = LexAnalyzer.getToken(br);
 			token_split = token.split(" ");
 			if(token_split[0].equals("<") || token_split[0].equals(">") || token_split[0].equals("<=") || token_split[0].equals(">=") || token_split[0].equals("=")){
-				unit1 = compExp(br,fileOut,token_split[0],findClass);
+				unit1 = compExp(br,fileOut,token_split[0],findClass,workingClassName);
 			}
 			else if(token_split[0].equals("|") || token_split[0].equals("&") || token_split[0].equals("!")){
-				unit1 = boolExp(br,fileOut,token_split[0],findClass);
+				unit1 = boolExp(br,fileOut,token_split[0],findClass,workingClassName);
 			}
 			else{
 				//error
@@ -285,10 +298,10 @@ public class Interpreter{
 			token = LexAnalyzer.getToken(br);
 			token_split = token.split(" ");
 			if(token_split[0].equals("<") || token_split[0].equals(">") || token_split[0].equals("<=") || token_split[0].equals(">=") || token_split[0].equals("=")){
-				unit2 = compExp(br,fileOut,token_split[0],findClass);
+				unit2 = compExp(br,fileOut,token_split[0],findClass,workingClassName);
 			}
 			else if(token_split[0].equals("|") || token_split[0].equals("&") || token_split[0].equals("!")){
-				unit2 = boolExp(br,fileOut,token_split[0],findClass);
+				unit2 = boolExp(br,fileOut,token_split[0],findClass,workingClassName);
 			}
 			else{
 				//error
@@ -339,7 +352,7 @@ public class Interpreter{
 		return false;
 	}
 	
-	static boolean compExp(BufferedReader br, PrintStream fileOut, String readToken, multipleClassDef findClass) throws IOException{
+	static boolean compExp(BufferedReader br, PrintStream fileOut, String readToken, multipleClassDef findClass, String workingClassName) throws IOException{
 		//get arthimatic type
 		double unit1 = -1;
 		double unit2 = -1;
@@ -361,17 +374,17 @@ public class Interpreter{
 			token = LexAnalyzer.getToken(br);
 			token_split = token.split(" ");
 			if(token_split[0].equals("+") || token_split[0].equals("*") || token_split[0].equals("-") || token_split[0].equals("/")){
-				unit1 = arithExp(br,fileOut,token_split[0],findClass);
+				unit1 = arithExp(br,fileOut,token_split[0],findClass,workingClassName);
 				if(unit1 % 1 != 0){
 					unit1Double = true;
 				}
 			}
 			else if(readToken.equals("=") && (token_split[0].equals("<") || token_split[0].equals(">") || token_split[0].equals("<=") || token_split[0].equals(">=") || token_split[0].equals("="))){
-				unit1b = compExp(br,fileOut,token_split[0],findClass);
+				unit1b = compExp(br,fileOut,token_split[0],findClass,workingClassName);
 				unit1Bool = true;
 			}
 			else if(token_split[1].equals("id")){
-				unit1Obj = constExp(br,fileOut,token_split[0],findClass);
+				unit1Obj = constExp(br,fileOut,token_split[0],findClass,workingClassName);
 				unit1Object = true;
 				token = LexAnalyzer.getToken(br);
 				token_split = token.split(" ");
@@ -409,17 +422,17 @@ public class Interpreter{
 			token = LexAnalyzer.getToken(br);
 			token_split = token.split(" ");
 			if(token_split[0].equals("+") || token_split[0].equals("*") || token_split[0].equals("-") || token_split[0].equals("/")){
-				unit2 = arithExp(br,fileOut,token_split[0],findClass);
+				unit2 = arithExp(br,fileOut,token_split[0],findClass,workingClassName);
 				if(unit2 % 1 != 0){
 					unit2Double = true;
 				}
 			}
 			else if(readToken.equals("=") && (token_split[0].equals("<") || token_split[0].equals(">") || token_split[0].equals("<=") || token_split[0].equals(">=") || token_split[0].equals("="))){
-				unit2b = compExp(br,fileOut,token_split[0],findClass);
+				unit2b = compExp(br,fileOut,token_split[0],findClass,workingClassName);
 				unit2Bool = true;
 			}
 			else if(token_split[1].equals("id")){
-				unit2Obj = constExp(br,fileOut,token_split[0],findClass);
+				unit2Obj = constExp(br,fileOut,token_split[0],findClass,workingClassName);
 				unit2Object = true;
 				token = LexAnalyzer.getToken(br);
 				token_split = token.split(" ");
@@ -499,7 +512,7 @@ public class Interpreter{
 		return false;
 	}
 	
-	static double condExp(BufferedReader br, PrintStream fileOut, String readToken, multipleClassDef findClass) throws IOException{
+	static double condExp(BufferedReader br, PrintStream fileOut, String readToken, multipleClassDef findClass, String workingClassName) throws IOException{
 		//get arthimatic type
 		double unit1 = -1;
 		double unit2 = -1;
@@ -515,10 +528,10 @@ public class Interpreter{
 			token = LexAnalyzer.getToken(br);
 			token_split = token.split(" ");
 			if(token_split[0].equals("<") || token_split[0].equals(">") || token_split[0].equals("<=") || token_split[0].equals(">=") || token_split[0].equals("=")){
-				unit1b = compExp(br,fileOut,token_split[0],findClass);
+				unit1b = compExp(br,fileOut,token_split[0],findClass,workingClassName);
 			}
 			else if(token_split[0].equals("|") || token_split[0].equals("&") || token_split[0].equals("!")){
-				unit1b = boolExp(br,fileOut,token_split[0],findClass);
+				unit1b = boolExp(br,fileOut,token_split[0],findClass,workingClassName);
 			}
 			else{
 				//error
@@ -596,7 +609,7 @@ public class Interpreter{
 		return -999999;
 	}
 
-	static String constExp(BufferedReader br, PrintStream fileOut, String readToken, multipleClassDef findClass) throws IOException{
+	static String constExp(BufferedReader br, PrintStream fileOut, String readToken, multipleClassDef findClass, String workingClassName) throws IOException{
 		boolean foundClass = false;
 		String builtObject = "";
 		while(findClass.multiclassdef != null){
@@ -614,7 +627,7 @@ public class Interpreter{
 						token_split = token.split(" ");
 						//arith
 						if(token_split[0].equals("+") || token_split[0].equals("*") || token_split[0].equals("-") || token_split[0].equals("/")){
-							double result = arithExp(br,fileOut,token_split[0],findClass);
+							double result = arithExp(br,fileOut,token_split[0],findClass,workingClassName);
 							if(result % 1 != 0){
 								builtObject += findClass.classInfo.fields.get(i) + "=" + Double.toString(result);
 							}
@@ -623,15 +636,15 @@ public class Interpreter{
 							}
 						}
 						else if(token_split[0].equals("|") || token_split[0].equals("&") || token_split[0].equals("!")){
-							boolean result = boolExp(br,fileOut,token_split[0],findClass);
+							boolean result = boolExp(br,fileOut,token_split[0],findClass,workingClassName);
 							builtObject += findClass.classInfo.fields.get(i) + "=" + Boolean.toString(result);
 						}
 						else if(token_split[0].equals("<") || token_split[0].equals(">") || token_split[0].equals("<=") || token_split[0].equals(">=") || token_split[0].equals("=")){
-							boolean result = compExp(br,fileOut,token_split[0],findClass);
+							boolean result = compExp(br,fileOut,token_split[0],findClass,workingClassName);
 							builtObject += findClass.classInfo.fields.get(i) + "=" + Boolean.toString(result);
 						}
 						else if(token_split[0].equals("if")){
-							double result = condExp(br,fileOut,token_split[0],findClass);
+							double result = condExp(br,fileOut,token_split[0],findClass,workingClassName);
 							if(result % 1 != 0){
 								builtObject += findClass.classInfo.fields.get(i) + "=" + Double.toString(result);
 							}
@@ -640,7 +653,7 @@ public class Interpreter{
 							}
 						}
 						else if(token_split[1].equals("id")){
-							String result = constExp(br, fileOut, token_split[0], findClass);
+							String result = constExp(br, fileOut, token_split[0], findClass,workingClassName);
 							builtObject += findClass.classInfo.fields.get(i) + "=" + result;
 							token = LexAnalyzer.getToken(br);
 							token_split = token.split(" ");
@@ -693,15 +706,15 @@ public class Interpreter{
 		}
 		return "";
 	}
-	
-	static String fieldExp(BufferedReader br, PrintStream fileOut, String readToken, multipleClassDef findClass) throws IOException{
+	//project 4 modified for user functions 
+	static String fieldExp(BufferedReader br, PrintStream fileOut, String readToken, multipleClassDef findClass, String workingClassName) throws IOException{
 		String token = LexAnalyzer.getToken(br);
 		String[] token_split = token.split(" ");
 		if(token_split[0].equals("(")){
 			token = LexAnalyzer.getToken(br);
 			token_split = token.split(" ");
 			if(token_split[1].equals("id")){
-				String classInfo = constExp(br,fileOut,token_split[0],findClass);
+				String classInfo = constExp(br,fileOut,token_split[0],findClass,workingClassName);
 				//System.out.println("class gotten:" + classInfo);
 				token = LexAnalyzer.getToken(br);
 				token_split = token.split(" ");
@@ -710,75 +723,86 @@ public class Interpreter{
 				if(token_split[0].equals("(")){
 					token = LexAnalyzer.getToken(br);
 					token_split = token.split(" ");
-					
 					if(token_split[1].equals("id")){
-						String parametersOfMain = "";
-						int braceCount = 0;
-						for(int i=0;i<classInfo.length();i++){
-							char temp = classInfo.charAt(i);
-							if(temp == '{'){
-								braceCount++;
-								do{
+						//gotten function/variable to return
+						//if parameter gotten is in fields
+						if(classInfo.contains(token_split[0])){
+							String parametersOfMain = "";
+							int braceCount = 0;
+							for(int i=0;i<classInfo.length();i++){
+								char temp = classInfo.charAt(i);
+								if(temp == '{'){
+									braceCount++;
+									do{
+										i++;
+										temp = classInfo.charAt(i);
+										
+										if(temp == '{'){
+											braceCount++;
+										}
+										if(temp == '}'){
+											braceCount--;
+											if(braceCount == 0){
+												break;
+											}
+										}
+										parametersOfMain += temp;
+									}while(braceCount != 0);
+								}
+							}
+							//System.out.println("main parameters:" + parametersOfMain);
+							//start getting individual parameters
+							String parameterName = "";
+							String parameterValue = "";
+							braceCount = 0;
+							for(int i=0;i<parametersOfMain.length();i++){
+								char temp = parametersOfMain.charAt(i);
+								if(temp == '='){
+									int innerBrace = 0;
 									i++;
-									temp = classInfo.charAt(i);
-									
-									if(temp == '{'){
-										braceCount++;
-									}
-									if(temp == '}'){
-										braceCount--;
-										if(braceCount == 0){
+									while(temp != ',' || innerBrace != 0){
+										temp = parametersOfMain.charAt(i);
+										if(temp == '{'){
+											innerBrace++;
+										}
+										if(temp == '}'){
+											innerBrace--;
+										}
+										if(innerBrace == 0 && temp == ','){
+											break;
+										}
+										parameterValue += temp;
+										//System.out.println("param val so far:" + parameterValue);
+										i++;
+										if(i == parametersOfMain.length()){
 											break;
 										}
 									}
-									parametersOfMain += temp;
-								}while(braceCount != 0);
-							}
-						}
-						//System.out.println("main parameters:" + parametersOfMain);
-						//start getting individual parameters
-						String parameterName = "";
-						String parameterValue = "";
-						braceCount = 0;
-						for(int i=0;i<parametersOfMain.length();i++){
-							char temp = parametersOfMain.charAt(i);
-							if(temp == '='){
-								int innerBrace = 0;
-								i++;
-								while(temp != ',' || innerBrace != 0){
+									if(parameterName.equals(token_split[0])){
+										return parameterValue;
+									}
+									i += 2;
+									parameterName = "";
+									parameterValue = "";
 									temp = parametersOfMain.charAt(i);
-									if(temp == '{'){
-										innerBrace++;
-									}
-									if(temp == '}'){
-										innerBrace--;
-									}
-									if(innerBrace == 0 && temp == ','){
-										break;
-									}
-									parameterValue += temp;
-									//System.out.println("param val so far:" + parameterValue);
-									i++;
-									if(i == parametersOfMain.length()){
-										break;
-									}
 								}
-								if(parameterName.equals(token_split[0])){
-									return parameterValue;
-								}
-								i += 2;
-								parameterName = "";
-								parameterValue = "";
-								temp = parametersOfMain.charAt(i);
+								parameterName += temp;
 							}
-							parameterName += temp;
 						}
-						
-						System.setOut(fileOut);
-						System.out.println(token_split[0] + " Error, couldn't find symbol during field expresion");
-						System.setOut(console);
-						System.out.println(token_split[0] + " Error, couldn't find symbol during field expresion");
-						System.exit(0);
+						//function name found
+						else if(findClass.classInfo.funMap.containsKey(token_split[0])){
+							//function was found, start getting its information
+							int funParamLength = findClass.classInfo.funMap.get(token_split[0]).size();
+							String funBody = findClass.classInfo.funBodyMap.get(token_split[0]);
+							
+						}
+						else{
+							System.setOut(fileOut);
+							System.out.println(token_split[0] + " Error, couldn't find symbol during field expresion");
+							System.setOut(console);
+							System.out.println(token_split[0] + " Error, couldn't find symbol during field expresion");
+							System.exit(0);
+						}
 					}
 					
 					else{
