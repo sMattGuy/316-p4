@@ -1,4 +1,7 @@
 import java.io.*;
+import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Comparator;
 
 public class Interpreter{
 	static PrintStream o;
@@ -21,88 +24,10 @@ public class Interpreter{
 		//get parse tree
 		multipleClassDef completeParse = Parser.getParse(brClass, o);
 		//start paring the expression file
-		eval(brExp,o2,console,completeParse,null);
-	}
-	
-	static String eval(BufferedReader brExp,PrintStream o2,PrintStream console,multipleClassDef completeParse, String workingClassName) throws IOException{
 		String token = LexAnalyzer.getToken(brExp);
 		String[] token_split = token.split(" ");
 		if(token_split[0].equals("(")){
-			//begin parse
-			//get identifier token
-			token = LexAnalyzer.getToken(brExp);
-			token_split = token.split(" ");
-			//go to expression function
-			//arith
-			if(token_split[0].equals("+") || token_split[0].equals("*") || token_split[0].equals("-") || token_split[0].equals("/")){
-				System.setOut(o2);
-				double result = arithExp(brExp,o2,token_split[0],completeParse,workingClassName);
-				if(isDouble){
-					System.out.println(result);
-					System.setOut(console);
-					System.out.println(result);
-					return Double.toString(result);
-				}
-				else{
-					System.out.println((int)result);
-					System.setOut(console);
-					System.out.println((int)result);
-					return Integer.toString((int)result);
-				}
-			}
-			//boolean
-			else if(token_split[0].equals("|") || token_split[0].equals("&") || token_split[0].equals("!")){
-				boolean results = boolExp(brExp,o2,token_split[0],completeParse,workingClassName);
-				System.setOut(o2);
-				System.out.println(results);
-				System.setOut(console);
-				System.out.println(results);
-				return Boolean.toString(results);
-			}
-			//comparison
-			else if(token_split[0].equals("<") || token_split[0].equals(">") || token_split[0].equals("<=") || token_split[0].equals(">=") || token_split[0].equals("=")){
-				boolean results = compExp(brExp,o2,token_split[0],completeParse,workingClassName);
-				System.setOut(o2);
-				System.out.println(results);
-				System.setOut(console);
-				System.out.println(results);
-				return Boolean.toString(results);
-			}
-			//condition
-			else if(token_split[0].equals("if")){
-				double results = condExp(brExp,o2,token_split[0],completeParse,workingClassName);
-				System.setOut(o2);
-				System.out.println(results);
-				System.setOut(console);
-				System.out.println(results);
-				return Double.toString(results);
-			}
-			//constructor
-			else if(token_split[1].equals("id")){
-				String results = constExp(brExp,o2,token_split[0],completeParse,workingClassName);
-				System.setOut(o2);
-				System.out.println(results);
-				System.setOut(console);
-				System.out.println(results);
-				return results;
-			}
-			//field getter
-			else if(token_split[0].equals(".")){
-				String results = fieldExp(brExp,o2,token_split[0],completeParse,workingClassName);
-				System.setOut(o2);
-				System.out.println(results);
-				System.setOut(console);
-				System.out.println(results);
-				return results;
-			}
-			//error
-			else{
-				System.setOut(o2);
-				System.out.println(token_split[0] + " Error, couldn't find valid parse for expression");
-				System.setOut(console);
-				System.out.println(token_split[0] + " Error, couldn't find valid parse for expression");
-				System.exit(0);
-			}
+			eval(brExp,o2,console,completeParse,null);
 		}
 		else{
 			//error invalid start
@@ -112,7 +37,84 @@ public class Interpreter{
 			System.out.println(token_split[0] + " Error, invalid start of expression");
 			System.exit(0);
 		}
-		return "error didn't return a valid result";
+	}
+	
+	static String eval(BufferedReader brExp,PrintStream o2,PrintStream console,multipleClassDef completeParse, String workingClassName) throws IOException{
+		String token = LexAnalyzer.getToken(brExp);
+		String[] token_split = token.split(" ");
+		//begin parse
+		//go to expression function
+		//arith
+		if(token_split[0].equals("+") || token_split[0].equals("*") || token_split[0].equals("-") || token_split[0].equals("/")){
+			System.setOut(o2);
+			double result = arithExp(brExp,o2,token_split[0],completeParse,workingClassName);
+			if(isDouble){
+				System.out.println(result);
+				System.setOut(console);
+				System.out.println(result);
+				return Double.toString(result);
+			}
+			else{
+				System.out.println((int)result);
+				System.setOut(console);
+				System.out.println((int)result);
+				return Integer.toString((int)result);
+			}
+		}
+		//boolean
+		else if(token_split[0].equals("|") || token_split[0].equals("&") || token_split[0].equals("!")){
+			boolean results = boolExp(brExp,o2,token_split[0],completeParse,workingClassName);
+			System.setOut(o2);
+			System.out.println(results);
+			System.setOut(console);
+			System.out.println(results);
+			return Boolean.toString(results);
+		}
+		//comparison
+		else if(token_split[0].equals("<") || token_split[0].equals(">") || token_split[0].equals("<=") || token_split[0].equals(">=") || token_split[0].equals("=")){
+			boolean results = compExp(brExp,o2,token_split[0],completeParse,workingClassName);
+			System.setOut(o2);
+			System.out.println(results);
+			System.setOut(console);
+			System.out.println(results);
+			return Boolean.toString(results);
+		}
+		//condition
+		else if(token_split[0].equals("if")){
+			double results = condExp(brExp,o2,token_split[0],completeParse,workingClassName);
+			System.setOut(o2);
+			System.out.println(results);
+			System.setOut(console);
+			System.out.println(results);
+			return Double.toString(results);
+		}
+		//constructor
+		else if(token_split[1].equals("id")){
+			String results = constExp(brExp,o2,token_split[0],completeParse,workingClassName);
+			System.setOut(o2);
+			System.out.println(results);
+			System.setOut(console);
+			System.out.println(results);
+			return results;
+		}
+		//field getter
+		else if(token_split[0].equals(".")){
+			String results = fieldExp(brExp,o2,token_split[0],completeParse,workingClassName);
+			System.setOut(o2);
+			System.out.println(results);
+			System.setOut(console);
+			System.out.println(results);
+			return results;
+		}
+		//error
+		else{
+			System.setOut(o2);
+			System.out.println(token_split[0] + " Error, couldn't find valid parse for expression");
+			System.setOut(console);
+			System.out.println(token_split[0] + " Error, couldn't find valid parse for expression");
+			System.exit(0);
+		}
+	return "error didn't return a valid result";
 	}
 	
 	static double arithExp(BufferedReader br, PrintStream fileOut, String readToken, multipleClassDef findClass, String workingClassName) throws IOException{
@@ -130,6 +132,15 @@ public class Interpreter{
 				if(unit1 % 1 != 0){
 					isDouble = true;
 				}
+			}
+			else if(token_split[0].equals(".")){
+				String fieldParse = fieldExp(br,fileOut,readToken,findClass,workingClassName);
+				unit1 = Double.parseDouble(fieldParse);
+				if(unit1 % 1 != 0){
+					isDouble = true;
+				}
+				token = LexAnalyzer.getToken(br);
+				token_split = token.split(" ");
 			}
 			else if(token_split[0].equals("if")){
 				unit1 = condExp(br,fileOut,token_split[0],findClass,workingClassName);
@@ -180,6 +191,15 @@ public class Interpreter{
 				if(unit2 % 1 != 0){
 					isDouble = true;
 				}
+			}
+			else if(token_split[0].equals(".")){
+				String fieldParse = fieldExp(br,fileOut,readToken,findClass,workingClassName);
+				unit2 = Double.parseDouble(fieldParse);
+				if(unit2 % 1 != 0){
+					isDouble = true;
+				}
+				token = LexAnalyzer.getToken(br);
+				token_split = token.split(" ");
 			}
 			else{
 				//error
@@ -715,7 +735,12 @@ public class Interpreter{
 			token_split = token.split(" ");
 			if(token_split[1].equals("id")){
 				String classInfo = constExp(br,fileOut,token_split[0],findClass,workingClassName);
+				workingClassName = classInfo;
 				//System.out.println("class gotten:" + classInfo);
+				multipleClassDef workingClass = findClass;
+				while(!workingClass.classInfo.className.equals(token_split[0])){
+					workingClass = workingClass.multiclassdef;
+				}
 				token = LexAnalyzer.getToken(br);
 				token_split = token.split(" ");
 				token = LexAnalyzer.getToken(br);
@@ -726,6 +751,9 @@ public class Interpreter{
 					if(token_split[1].equals("id")){
 						//gotten function/variable to return
 						//if parameter gotten is in fields
+						System.out.println(token_split[0]);
+						System.out.println(workingClass.classInfo.funMap);
+						System.out.println(workingClass.classInfo.funMap.containsKey(token_split[0]));
 						if(classInfo.contains(token_split[0])){
 							String parametersOfMain = "";
 							int braceCount = 0;
@@ -790,11 +818,31 @@ public class Interpreter{
 							}
 						}
 						//function name found
-						else if(findClass.classInfo.funMap.containsKey(token_split[0])){
+						else if(workingClass.classInfo.funMap.containsKey(token_split[0])){
 							//function was found, start getting its information
-							int funParamLength = findClass.classInfo.funMap.get(token_split[0]).size();
-							String funBody = findClass.classInfo.funBodyMap.get(token_split[0]);
-							
+							int funParamLength = workingClass.classInfo.funMap.get(token_split[0]).size();
+							LinkedList<String> funParams = workingClass.classInfo.funMap.get(token_split[0]);
+							String funBody = workingClass.classInfo.funBodyMap.get(token_split[0]);
+							for(int i=0;i<funParamLength;i++){
+								String result = "";
+								token = LexAnalyzer.getToken(br);
+								token_split = token.split(" ");
+								System.out.println("function part to replace:"+funParams.get(i)+" with "+token_split[0]);
+								if(token_split[0].equals("(")){
+									result = eval(br,fileOut,console,workingClass,workingClassName);
+									funBody = funBody.replace(funParams.get(i), result);
+								}
+								else{
+									funBody = funBody.replace(funParams.get(i), token_split[0]);
+								}
+							}
+							System.out.println("Function body made from peices:" + funBody);
+							Reader functionToParse = new StringReader(funBody);
+							BufferedReader subParser = new BufferedReader(functionToParse);
+							LexAnalyzer.getToken(subParser);
+							String subResult = eval(subParser,fileOut,fileOut,workingClass,workingClassName);
+							System.out.println("results of output:"+ subResult);
+							return subResult;
 						}
 						else{
 							System.setOut(fileOut);
@@ -824,7 +872,7 @@ public class Interpreter{
 				}
 			}
 			else if(token_split[0].equals(".")){
-				String parametersOfMain = fieldExp(br,fileOut,readToken,findClass);
+				String parametersOfMain = fieldExp(br,fileOut,readToken,findClass,workingClassName);
 				//first end paren
 				token = LexAnalyzer.getToken(br);
 				token_split = token.split(" ");
@@ -896,6 +944,10 @@ public class Interpreter{
 				System.exit(0);
 			}
 		}
+		else if(token_split[0].equals("this")){
+			System.out.println("got 'this' statement");
+			return parseThis(br,fileOut,findClass,workingClassName);
+		}
 		else{
 			//error
 			System.setOut(fileOut);
@@ -906,4 +958,129 @@ public class Interpreter{
 		}
 		return "";
 	}
+	static String parseThis(BufferedReader br, PrintStream fileOut, multipleClassDef findClass, String workingClassName) throws IOException{
+		String token = LexAnalyzer.getToken(br);
+		String[] token_split = token.split(" ");
+		if(token_split[0].equals("(")){
+			token = LexAnalyzer.getToken(br);
+			token_split = token.split(" ");
+		}
+		if(workingClassName.contains(token_split[0])){
+			String classInfo = workingClassName;
+			String parametersOfMain = "";
+			int braceCount = 0;
+			for(int i=0;i<classInfo.length();i++){
+				char temp = classInfo.charAt(i);
+				if(temp == '{'){
+					braceCount++;
+					do{
+						i++;
+						temp = classInfo.charAt(i);
+						
+						if(temp == '{'){
+							braceCount++;
+						}
+						if(temp == '}'){
+							braceCount--;
+							if(braceCount == 0){
+								break;
+							}
+						}
+						parametersOfMain += temp;
+					}while(braceCount != 0);
+				}
+			}
+			//System.out.println("main parameters:" + parametersOfMain);
+			//start getting individual parameters
+			String parameterName = "";
+			String parameterValue = "";
+			braceCount = 0;
+			for(int i=0;i<parametersOfMain.length();i++){
+				char temp = parametersOfMain.charAt(i);
+				if(temp == '='){
+					int innerBrace = 0;
+					i++;
+					while(temp != ',' || innerBrace != 0){
+						temp = parametersOfMain.charAt(i);
+						if(temp == '{'){
+							innerBrace++;
+						}
+						if(temp == '}'){
+							innerBrace--;
+						}
+						if(innerBrace == 0 && temp == ','){
+							break;
+						}
+						parameterValue += temp;
+						//System.out.println("param val so far:" + parameterValue);
+						i++;
+						if(i == parametersOfMain.length()){
+							break;
+						}
+					}
+					if(parameterName.equals(token_split[0])){
+						return parameterValue;
+					}
+					i += 2;
+					parameterName = "";
+					parameterValue = "";
+					temp = parametersOfMain.charAt(i);
+				}
+				parameterName += temp;
+			}
+		}
+		else if(findClass.classInfo.funMap.containsKey(token_split[0])){
+			String funBody = findClass.classInfo.funBodyMap.get(token_split[0]);
+			Reader bodyParse = new StringReader(funBody);
+			BufferedReader bodyBr = new BufferedReader(bodyParse);
+			//get next token
+			token = LexAnalyzer.getToken(bodyBr);
+			token_split = token.split(" ");
+			if(token_split[0].equals("(")){
+				//function body is an expression
+				return eval(bodyBr,fileOut,console,findClass,workingClassName);
+			}
+			else{
+				//function body is a value
+				return token_split[0];
+			}
+		}
+		else{
+			//error
+			System.setOut(fileOut);
+			System.out.println(token_split[0] + " Error, failed to parse 'this' expresion");
+			System.setOut(console);
+			System.out.println(token_split[0] + " Error, failed to parse 'this' expresion");
+			System.exit(0);
+		}
+		return "error";
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
