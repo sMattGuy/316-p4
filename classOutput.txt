@@ -1,0 +1,96 @@
+A=
+superclass=
+fields=[x1]
+functions={f1=[]}
+function bodies={f1=( + ( . this x1 ) 7.7 ) }
+
+B=
+superclass=A
+fields=[x1, x2]
+functions={f2=[], f1=[]}
+function bodies={f2=( - ( . this x2 ) ( . this ( x1 ) ) ) , f1=( + ( . this x1 ) 7.7 ) }
+
+C=
+superclass=A
+fields=[x1, x3]
+functions={f2=[], f3=[], f1=[]}
+function bodies={f2=( ! ( . this x3 ) ) , f3=( | ( . this ( f2 ) ) ( . this x3 ) ) , f1=( + ( . this x1 ) 7.7 ) }
+
+D=
+superclass=A
+fields=[x1, x4]
+functions={f4=[], f1=[]}
+function bodies={f4=( - ( . this ( x1 ) ) 10 ) , f1=( * ( . this x4 ) 7.7 ) }
+
+E=
+superclass=B
+fields=[x1, x2, x5]
+functions={f6=[], f1=[], f2=[], f5=[]}
+function bodies={f6=( D 20 30 ) , f1=( / ( . this ( f2 ) ) 0.35 ) , f2=( - ( . this x2 ) ( . this ( x1 ) ) ) , f5=( C 10 ( = 0 0 ) ) }
+
+F=
+superclass=C
+fields=[x1, x3, x6]
+functions={f7=[], f8=[], f1=[], f2=[], f3=[]}
+function bodies={f7=( if ( . this ( x3 ) ) ( . this ( f1 ) ) ( . this ( f3 ) ) ) , f8=( if ( . this x6 ) ( . this ( f2 ) ) ( . this ( x1 ) ) ) , f1=( + ( . this x1 ) 7.7 ) , f2=( ! ( . this x3 ) ) , f3=( & ( . this ( f2 ) ) ( . this ( x3 ) ) ) }
+
+G=
+superclass=D
+fields=[x1, x4, x7, x8]
+functions={f4=[], f1=[], f9=[]}
+function bodies={f4=( - ( . this ( x1 ) ) 10 ) , f1=( * ( . this x4 ) 7.7 ) , f9=( + ( . this x7 ) ( . this x8 ) ) }
+
+Pair=
+superclass=
+fields=[first, second]
+functions={}
+function bodies={}
+
+List=
+superclass=
+fields=[]
+functions={buildList=[i], isEmpty=[]}
+function bodies={buildList=( if ( = i 0 ) ( EmptyList ) ( NonEmptyList i ( . this ( buildList ( - i 1 ) ) ) ) ) , isEmpty=null }
+
+EmptyList=
+superclass=List
+fields=[]
+functions={isEmpty=[], length=[], buildList=[i]}
+function bodies={isEmpty=( = 0 0 ) , length=0 , buildList=( if ( = i 0 ) ( EmptyList ) ( NonEmptyList i ( . this ( buildList ( - i 1 ) ) ) ) ) }
+
+NonEmptyList=
+superclass=List
+fields=[data, tailList]
+functions={isEmpty=[], length=[], buildList=[i]}
+function bodies={isEmpty=( = 0 1 ) , length=( + 1 ( . ( . this tailList ) ( length ) ) ) , buildList=( if ( = i 0 ) ( EmptyList ) ( NonEmptyList i ( . this ( buildList ( - i 1 ) ) ) ) ) }
+
+BST=
+superclass=
+fields=[]
+functions={search=[data], insert=[x], height=[], exampleBST=[]}
+function bodies={search=null , insert=null , height=null , exampleBST=( . ( . ( . ( . ( . ( . ( . ( EmptyBST ) ( insert 4 ) ) ( insert 2 ) ) ( insert 6 ) ) ( insert 1 ) ) ( insert 3 ) ) ( insert 5 ) ) ( insert 7 ) ) }
+
+EmptyBST=
+superclass=BST
+fields=[]
+functions={insert=[x], search=[data], exampleBST=[], height=[]}
+function bodies={insert=( NonEmptyBST x this this ) , search=null , exampleBST=( . ( . ( . ( . ( . ( . ( . ( EmptyBST ) ( insert 4 ) ) ( insert 2 ) ) ( insert 6 ) ) ( insert 1 ) ) ( insert 3 ) ) ( insert 5 ) ) ( insert 7 ) ) , height=0 }
+
+NonEmptyBST=
+superclass=BST
+fields=[data, leftSubTree, rightSubTree]
+functions={insert=[x], search=[x], exampleBST=[], height=[]}
+function bodies={insert=( if ( = x ( . this data ) ) this ( if ( < x ( . this data ) ) ( NonEmptyBST ( . this data ) ( . ( . this leftSubTree ) ( insert x ) ) ( . this rightSubTree ) ) ( NonEmptyBST ( . this data ) ( . this leftSubTree ) ( . ( . this rightSubTree ) ( insert x ) ) ) ) ) , search=( if ( = x ( . this data ) ) this ( if ( < x ( . this data ) ) ( . ( . this leftSubTree ) ( search x ) ) ( . ( . this rightSubTree ) ( search x ) ) ) ) , exampleBST=( . ( . ( . ( . ( . ( . ( . ( EmptyBST ) ( insert 4 ) ) ( insert 2 ) ) ( insert 6 ) ) ( insert 1 ) ) ( insert 3 ) ) ( insert 5 ) ) ( insert 7 ) ) , height=( + 1 ( . ( C1 ) ( max ( . ( . this leftSubTree ) ( height ) ) ( . ( . this rightSubTree ) ( height ) ) ) ) ) }
+
+C1=
+superclass=
+fields=[]
+functions={examplePair=[], max=[x, y]}
+function bodies={examplePair=( Pair ( Pair 1 2 ) ( Pair 3 4 ) ) , max=( if ( >= x y ) x y ) }
+
+C2=
+superclass=
+fields=[]
+functions={square=[x], fact=[n], test=[x, y], pi=[], cylinderVolume=[length, radius], fib=[n]}
+function bodies={square=( * x x ) , fact=( if ( = n 0 ) 1 ( * n ( . this ( fact ( - n 1 ) ) ) ) ) , test=( if ( > x -0987 ) +6453 ( / -1540 y ) ) , pi=3.14159 , cylinderVolume=( * length ( * ( . this ( pi ) ) ( . this ( square radius ) ) ) ) , fib=( if ( <= n 1 ) n ( + ( . this ( fib ( - n 1 ) ) ) ( . this ( fib ( - n 2 ) ) ) ) ) }
+

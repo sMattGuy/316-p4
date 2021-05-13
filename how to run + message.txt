@@ -1,0 +1,12 @@
+how to compile
+javac src/*.java -d bin
+
+how to run
+java -cp bin Interpreter class.txt classOut.txt expression.txt expressionOut.txt
+
+
+Thank you for the wonderful semester, this final part took me 4 days to debug!
+But it was a great learning experience. I hope to see you on campus in fall
+
+Thank you,
+Matthew Flammia 23661371

@@ -71,6 +71,7 @@ public class Parser{
 						System.out.println("Next internal token: " + token);
 						System.setOut(classOutput);
 					}
+					functionBody = functionBody.concat(token_split[0] + " ");
 					System.setOut(debug);
 					System.out.println("Function expression complete");
 					System.setOut(classOutput);
